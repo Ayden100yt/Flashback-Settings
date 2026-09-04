@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "flashback-settings",
+	"version": "${version}",
+	"name": "Flashback Settings",
+	"description": "A mod that adds more Flashback settings starting with changing the replay folder location and adding subfolders.",
+	"authors": [
+		"Ayden100"
+	],
+	"contact": {
+		"not yet": ""
+	},
+	"license": "MIT License",
+	"icon": "assets/flashback-settings/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.flashbacksettings.FlashbackSettings"
+		],
+		"client": [
+			"com.flashbacksettings.client.FlashbackSettingsClient"
+		]
+	},
+	"mixins": [
+		"flashback-settings.mixins.json",
+		{
+			"config": "flashback-settings.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.2",
+		"java": ">=25",
+		"fabric-api": "*",
+		"flashback": "*"
+	}
+}
