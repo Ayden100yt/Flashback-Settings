@@ -10,8 +10,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 
@@ -43,12 +41,6 @@ public class FlashbackReplayFolderMixin {
             }
         }
 
-        try {
-            Files.createDirectories(folder);
-        } catch (IOException e) {
-            FlashbackSettings.LOGGER.error("[FlashbackSettings] Failed to create replay folder: {}", folder, e);
-            return;
-        }
         cir.setReturnValue(folder);
     }
 
