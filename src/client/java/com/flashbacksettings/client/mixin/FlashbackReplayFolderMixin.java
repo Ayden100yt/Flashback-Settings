@@ -28,7 +28,7 @@ public class FlashbackReplayFolderMixin {
         FlashbackSettings.ModConfig config = mod.getConfig();
         String customFolder = config.replayFolder;
         Path folder = customFolder == null || customFolder.isBlank()
-            ? cir.getReturnValue()
+            ? Flashback.getDataDirectory().resolve("replays")
             : Path.of(customFolder).toAbsolutePath().normalize();
 
         if (config.dynamicSubfolders) {

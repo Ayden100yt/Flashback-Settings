@@ -3,7 +3,8 @@
 	"package": "com.flashbacksettings.client.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
-		"FlashbackReplayFolderMixin"
+		"FlashbackReplayFolderMixin",
+		"FlashbackReplayMenuMixin"
 	],
 	"injectors": {
 		"defaultRequire": 0
