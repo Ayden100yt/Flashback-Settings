@@ -90,7 +90,7 @@ public class FlashbackSettingsScreen extends Screen {
     }
 
     private static Component dynamicLabel(boolean enabled) {
-        return Component.literal("Dynamic Subfolders: " + (enabled ? "ON" : "OFF"));
+        return Component.literal("Subfolders: " + (enabled ? "ON" : "OFF"));
     }
 
     private static Component componentLabel(String label, boolean enabled) {
