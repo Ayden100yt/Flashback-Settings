@@ -1,15 +1,12 @@
 package com.flashbacksettings.client;
 
 import com.flashbacksettings.FlashbackSettings;
-import com.moulberry.flashback.Flashback;
 import net.minecraft.ChatFormatting;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.network.chat.Component;
 
 import java.nio.file.Files;
@@ -74,6 +71,7 @@ public class FlashbackSettingsScreen extends Screen {
     protected void init() {
         this.left = this.width / 2 - CONTENT_WIDTH / 2;
         this.top = Math.max(8, (this.height - TOTAL_HEIGHT) / 2);
+        this.left = Math.max(PANEL_PADDING, this.left);
 
         // ---- Replay folder ----------------------------------------------
         String previous = this.replayFolderBox != null ? this.replayFolderBox.getValue() : null;
@@ -194,13 +192,8 @@ public class FlashbackSettingsScreen extends Screen {
         }
     }
 
-    /** Trims whitespace and surrounding quotes (Windows "Copy as path" adds them). */
     private static String cleanPath(String value) {
-        String s = value == null ? "" : value.trim();
-        if (s.length() >= 2 && s.startsWith("\"") && s.endsWith("\"")) {
-            s = s.substring(1, s.length() - 1).trim();
-        }
-        return s;
+        return ReplayPaths.cleanPath(value);
     }
 
     private void saveAndClose() {
@@ -234,33 +227,16 @@ public class FlashbackSettingsScreen extends Screen {
     }
 
     private static String currentVersion() {
-        try {
-            return sanitize(SharedConstants.getCurrentVersion().name(), "unknown-version");
-        } catch (Throwable t) {
-            return "unknown-version";
-        }
+        return ReplayPaths.currentVersion();
     }
 
-    private String currentServer() {
-        ServerData server = this.minecraft != null ? this.minecraft.getCurrentServer() : null;
-        return server == null ? "singleplayer" : sanitize(server.ip, "singleplayer");
-    }
-
-    private static String sanitize(String value, String fallback) {
-        if (value == null) {
-            return fallback;
-        }
-        String sanitized = value.trim().replaceAll("[^a-zA-Z0-9._-]+", "_");
-        return sanitized.isBlank() ? fallback : sanitized;
-    }
-
-    /** Example of where the next replay will be saved, mirroring FlashbackReplayFolderMixin. */
+    /** Example of where the next replay will be saved, mirroring ReplayPaths#replayFolder. */
     private String previewPath() {
         String raw = cleanPath(this.replayFolderBox.getValue());
         String base;
         if (raw.isEmpty()) {
             try {
-                base = Flashback.getDataDirectory().resolve("replays").toString();
+                base = ReplayPaths.defaultFolder().toString();
             } catch (Throwable t) {
                 base = ".flashback/replays";
             }
@@ -271,9 +247,9 @@ public class FlashbackSettingsScreen extends Screen {
         String sep = base.contains("\\") ? "\\" : "/";
         StringBuilder sb = new StringBuilder(base);
         if (this.subfolders) {
-            if (this.byServer) sb.append(sep).append(currentServer());
-            if (this.byDate) sb.append(sep).append(LocalDate.now());
-            if (this.byVersion) sb.append(sep).append(currentVersion());
+            if (this.byServer) sb.append(sep).append(ReplayPaths.currentServer());
+            if (this.byDate) sb.append(sep).append(ReplayPaths.currentDate());
+            if (this.byVersion) sb.append(sep).append(ReplayPaths.currentVersion());
         }
         return sb.toString();
     }
@@ -284,6 +260,9 @@ public class FlashbackSettingsScreen extends Screen {
             return text;
         }
         String ellipsis = "...";
+        if (maxWidth <= this.font.width(ellipsis)) {
+            return ellipsis;
+        }
         int start = 0;
         while (start < text.length() && this.font.width(ellipsis + text.substring(start)) > maxWidth) {
             start++;
@@ -295,8 +274,6 @@ public class FlashbackSettingsScreen extends Screen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor gfx, int mouseX, int mouseY, float delta) {
-        this.extractBackground(gfx, mouseX, mouseY, delta);
-
         int cx = this.width / 2;
         int right = left + CONTENT_WIDTH;
 

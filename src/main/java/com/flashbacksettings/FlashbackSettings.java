@@ -2,6 +2,7 @@ package com.flashbacksettings;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 public class FlashbackSettings implements ModInitializer {
 
@@ -55,8 +57,8 @@ public class FlashbackSettings implements ModInitializer {
                 loaded.replayFolder = "";
             }
             return loaded;
-        } catch (IOException e) {
-            LOGGER.error("[FlashbackSettings] Failed to read config using default.", e);
+        } catch (IOException | JsonParseException e) {
+            LOGGER.error("[FlashbackSettings] Failed to read config, using defaults.", e);
             return new ModConfig();
         }
     }
@@ -68,8 +70,17 @@ public class FlashbackSettings implements ModInitializer {
 
     private void saveConfig(ModConfig cfg, Path configFile) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        try (Writer writer = Files.newBufferedWriter(configFile)) {
-            gson.toJson(cfg, writer);
+        Path tmp = configFile.resolveSibling(configFile.getFileName() + ".tmp");
+        try {
+            Files.createDirectories(configFile.getParent());
+            try (Writer writer = Files.newBufferedWriter(tmp)) {
+                gson.toJson(cfg, writer);
+            }
+            try {
+                Files.move(tmp, configFile, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            } catch (IOException atomicFailed) {
+                Files.move(tmp, configFile, StandardCopyOption.REPLACE_EXISTING);
+            }
         } catch (IOException e) {
             LOGGER.error("[FlashbackSettings] Failed to save config.", e);
         }

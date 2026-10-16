@@ -7,12 +7,9 @@
 	"authors": [
 		"Ayden100"
 	],
-	"contact": {
-		"not yet": ""
-	},
-	"license": "MIT License",
+	"license": "MIT",
 	"icon": "assets/flashback-settings/icon.png",
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
 		"main": [
 			"com.flashbacksettings.FlashbackSettings"
@@ -30,9 +27,9 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.19.5",
-		"minecraft": "~26.2",
+		"minecraft": "~${minecraft}",
 		"java": ">=25",
 		"fabric-api": "*",
-		"flashback": "*"
+		"flashback": ">=${flashback_min}"
 	}
 }

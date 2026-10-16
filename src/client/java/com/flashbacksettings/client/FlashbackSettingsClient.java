@@ -21,7 +21,6 @@ public class FlashbackSettingsClient implements ClientModInitializer {
         openSettingsKey = KeyMappingHelper.registerKeyMapping(
             new KeyMapping(
                 "key.flashback-settings.open_settings",
-                InputConstants.Type.KEYSYM,
                 InputConstants.UNKNOWN.getValue(),
                 category
             )

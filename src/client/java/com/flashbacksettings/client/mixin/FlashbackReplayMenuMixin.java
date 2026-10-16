@@ -1,14 +1,14 @@
 package com.flashbacksettings.client.mixin;
 
-import com.flashbacksettings.FlashbackSettings;
-import com.moulberry.flashback.Flashback;
+import com.flashbacksettings.client.ReplayPaths;
+import com.moulberry.flashback.screen.select_replay.SelectReplayScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 import java.nio.file.Path;
 
-@Mixin(value = com.moulberry.flashback.screen.select_replay.SelectReplayScreen.class, remap = false)
+@Mixin(value = SelectReplayScreen.class, remap = false)
 public class FlashbackReplayMenuMixin {
     @ModifyArg(
         method = "<init>(Lnet/minecraft/client/gui/screens/Screen;)V",
@@ -16,17 +16,7 @@ public class FlashbackReplayMenuMixin {
         index = 1,
         remap = false
     )
-    private static Path redirectReplayFolderForMenu(Path original) {
-        FlashbackSettings mod = FlashbackSettings.getInstance();
-        if (mod == null || mod.getConfig() == null) {
-            return Flashback.getDataDirectory().resolve("replays");
-        }
-
-        String customFolder = mod.getConfig().replayFolder;
-        if (customFolder == null || customFolder.isBlank()) {
-            return Flashback.getDataDirectory().resolve("replays");
-        }
-
-        return Path.of(customFolder).toAbsolutePath().normalize();
+    private static Path flashbacksettings$redirectReplayFolderForMenu(Path original) {
+        return ReplayPaths.baseFolder();
     }
 }

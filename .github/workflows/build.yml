@@ -21,8 +21,10 @@ jobs:
           distribution: 'microsoft'
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-      - name: build
-        run: ./gradlew build
+      - name: build for 26.2
+        run: ./gradlew build -Pmc=26.2
+      - name: build for 26.3
+        run: ./gradlew build -Pmc=26.3
       - name: capture build artifacts
         uses: actions/upload-artifact@v7
         with:

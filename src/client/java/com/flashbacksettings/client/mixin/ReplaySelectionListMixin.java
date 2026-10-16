@@ -9,11 +9,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 @Mixin(value = ReplaySelectionList.class, remap = false)
@@ -26,6 +29,9 @@ public class ReplaySelectionListMixin {
         }
 
         cir.setReturnValue(originalFuture.thenApply(entries -> {
+            if (entries == null) {
+                return null;
+            }
             List<PendingSelectionEntry> updated = new ArrayList<>(entries.size());
             for (PendingSelectionEntry entry : entries) {
                 if (entry instanceof PendingSelectionEntry.Folder folder) {
@@ -43,19 +49,25 @@ public class ReplaySelectionListMixin {
     }
 
     private static int countReplaysRecursively(Path folder) {
-        try (DirectoryStream<Path> children = Files.newDirectoryStream(folder)) {
-            int total = 0;
-            for (Path child : children) {
-                if (Files.isDirectory(child)) {
-                    total += countReplaysRecursively(child);
-                } else if (child.toString().endsWith(".zip")) {
-                    total++;
+        int[] total = {0};
+        try {
+            Files.walkFileTree(folder, new SimpleFileVisitor<>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                    if (attrs.isRegularFile() && file.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".zip")) {
+                        total[0]++;
+                    }
+                    return FileVisitResult.CONTINUE;
                 }
-            }
-            return total;
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) {
+                    return FileVisitResult.CONTINUE;
+                }
+            });
         } catch (IOException e) {
             FlashbackSettings.LOGGER.warn("[FlashbackSettings] Failed to count replays under {}", folder, e);
-            return 0;
         }
+        return total[0];
     }
 }

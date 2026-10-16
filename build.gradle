@@ -3,6 +3,21 @@ plugins {
     id 'maven-publish'
 }
 
+def mc = project.property("mc").toString()
+def mcKey = "mc_" + mc.replace(".", "_")
+def mcProp = { String name ->
+    def value = project.findProperty("${mcKey}.${name}")
+    if (value == null) {
+        throw new GradleException("Unsupported Minecraft version '${mc}': ${mcKey}.${name} is missing in gradle.properties")
+    }
+    return value.toString()
+}
+
+version = "${project.mod_version}+${mc}"
+base {
+    archivesName = "flashback-settings"
+}
+
 loom {
     splitEnvironmentSourceSets()
 
@@ -25,18 +40,24 @@ repositories {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    minecraft "com.mojang:minecraft:${mc}"
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${mcProp("fabric_api_version")}"
 
-    compileOnly "maven.modrinth:flashback:${project.flashback_version}"
+    compileOnly "maven.modrinth:flashback:${mcProp("flashback_version")}"
+    localRuntime "maven.modrinth:flashback:${mcProp("flashback_version")}"
 }
 
 processResources {
-    inputs.property "version", project.version
+    def expandProps = [
+        "version"      : project.version,
+        "minecraft"    : mc,
+        "flashback_min": mcProp("flashback_min")
+    ]
+    inputs.properties expandProps
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version
+        expand expandProps
     }
 }
 
