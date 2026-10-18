@@ -92,5 +92,6 @@ public class FlashbackSettings implements ModInitializer {
         public boolean subfolderByDate = true;
         public boolean subfolderByServer = true;
         public boolean subfolderByVersion = true;
+        public boolean replayButtonInButtonBar = true;
     }
 }

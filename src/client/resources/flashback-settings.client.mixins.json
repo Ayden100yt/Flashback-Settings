@@ -5,7 +5,8 @@
 	"client": [
 		"FlashbackReplayFolderMixin",
 		"FlashbackReplayMenuMixin",
-		"ReplaySelectionListMixin"
+		"ReplaySelectionListMixin",
+		"TitleScreenButtonBarMixin"
 	],
 	"injectors": {
 		"defaultRequire": 0

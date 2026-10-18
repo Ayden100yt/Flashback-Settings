@@ -19,7 +19,7 @@ public class FlashbackSettingsScreen extends Screen {
     // Layout
     private static final int CONTENT_WIDTH = 310;
     private static final int PANEL_PADDING = 10;
-    private static final int TOTAL_HEIGHT = 196;
+    private static final int TOTAL_HEIGHT = 240;
 
     // Colors (ARGB)
     private static final int COLOR_TITLE = 0xFFFFFFFF;
@@ -40,6 +40,7 @@ public class FlashbackSettingsScreen extends Screen {
     private boolean byDate;
     private boolean byServer;
     private boolean byVersion;
+    private boolean buttonInBar;
 
     private EditBox replayFolderBox;
     private Button dateButton;
@@ -65,6 +66,7 @@ public class FlashbackSettingsScreen extends Screen {
         this.byDate = config.subfolderByDate;
         this.byServer = config.subfolderByServer;
         this.byVersion = config.subfolderByVersion;
+        this.buttonInBar = config.replayButtonInButtonBar;
     }
 
     @Override
@@ -134,6 +136,14 @@ public class FlashbackSettingsScreen extends Screen {
             })
             .bounds(left + (third + 4) * 2, top + 124, CONTENT_WIDTH - (third + 4) * 2, 20)
             .tooltip(Tooltip.create(Component.literal("One folder per Minecraft version, e.g. " + currentVersion() + ".")))
+            .build());
+
+        this.addRenderableWidget(Button.builder(toggleLabel("Replay Button in Icon Bar", this.buttonInBar), btn -> {
+                this.buttonInBar = !this.buttonInBar;
+                btn.setMessage(toggleLabel("Replay Button in Icon Bar", this.buttonInBar));
+            })
+            .bounds(left, top + 184, CONTENT_WIDTH, 20)
+            .tooltip(Tooltip.create(Component.literal("Move Flashback's replay button on the title screen into the row of small icon buttons, if your mods/modpack add one.")))
             .build());
 
         // ---- Footer -----------------------------------------------------
@@ -208,6 +218,7 @@ public class FlashbackSettingsScreen extends Screen {
             config.subfolderByDate = this.byDate;
             config.subfolderByServer = this.byServer;
             config.subfolderByVersion = this.byVersion;
+            config.replayButtonInButtonBar = this.buttonInBar;
             mod.saveConfig();
             FlashbackSettings.LOGGER.info("[FlashbackSettings] Config updated via in-game screen.");
         }
@@ -299,6 +310,9 @@ public class FlashbackSettingsScreen extends Screen {
         int labelWidth = this.font.width(label);
         gfx.text(this.font, label, left, top + 152, COLOR_MUTED, false);
         gfx.text(this.font, fitLeft(previewPath(), CONTENT_WIDTH - labelWidth), left + labelWidth, top + 152, COLOR_LABEL, false);
+
+        gfx.horizontalLine(left, right - 1, top + 166, COLOR_DIVIDER);
+        gfx.text(this.font, "Main Menu", left, top + 172, COLOR_LABEL, true);
 
         super.extractRenderState(gfx, mouseX, mouseY, delta);
     }
