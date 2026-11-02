@@ -1,0 +1,15 @@
+{
+  "providers": [
+    {
+      "type": "ttf",
+      "file": "flashback-settings:poppins-medium.ttf",
+      "size": 9.5,
+      "oversample": 4.0,
+      "shift": [0.0, 0.0]
+    },
+    {
+      "type": "reference",
+      "id": "minecraft:default"
+    }
+  ]
+}

@@ -3,9 +3,11 @@
 	"package": "com.flashbacksettings.client.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
+		"FlashbackAutoStartMixin",
 		"FlashbackReplayFolderMixin",
 		"FlashbackReplayMenuMixin",
 		"ReplaySelectionListMixin",
+		"SelectReplayScreenMixin",
 		"TitleScreenButtonBarMixin"
 	],
 	"injectors": {

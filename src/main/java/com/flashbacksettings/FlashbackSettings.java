@@ -14,6 +14,8 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FlashbackSettings implements ModInitializer {
 
@@ -56,6 +58,13 @@ public class FlashbackSettings implements ModInitializer {
             if (loaded.replayFolder == null) {
                 loaded.replayFolder = "";
             }
+            if (loaded.menuStyle == null) {
+                loaded.menuStyle = ModConfig.STYLE_VANILLA;
+            }
+            if (loaded.autoRecordServers == null) {
+                loaded.autoRecordServers = new ArrayList<>();
+            }
+            loaded.autoRecordServers.removeIf(s -> s == null || s.isBlank());
             return loaded;
         } catch (IOException | JsonParseException e) {
             LOGGER.error("[FlashbackSettings] Failed to read config, using defaults.", e);
@@ -93,5 +102,19 @@ public class FlashbackSettings implements ModInitializer {
         public boolean subfolderByServer = true;
         public boolean subfolderByVersion = true;
         public boolean replayButtonInButtonBar = true;
+
+        public boolean autoRecordPerServer = false;
+        public List<String> autoRecordServers = new ArrayList<>();
+        public boolean autoRecordSingleplayer = false;
+
+        public static final String STYLE_VANILLA = "vanilla";
+        public static final String STYLE_FANCY = "fancy";
+
+        /** Look of the settings screen: "vanilla" or "fancy". */
+        public String menuStyle = STYLE_VANILLA;
+
+        public boolean isFancyStyle() {
+            return STYLE_FANCY.equalsIgnoreCase(menuStyle);
+        }
     }
 }
