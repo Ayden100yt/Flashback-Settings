@@ -31,5 +31,7 @@ public class FlashbackSettingsClient implements ClientModInitializer {
                 client.setScreenAndShow(new FlashbackSettingsScreen(null));
             }
         });
+
+        ReplayStorage.start();
     }
 }

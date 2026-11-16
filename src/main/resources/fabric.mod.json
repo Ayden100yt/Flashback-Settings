@@ -7,6 +7,11 @@
 	"authors": [
 		"Ayden100"
 	],
+	"contact": {
+		"homepage": "https://modrinth.com/mod/flashback-settings",
+		"sources": "https://github.com/Ayden100yt/Flashback-Settings",
+		"issues": "https://github.com/Ayden100yt/Flashback-Settings/issues"
+	},
 	"license": "MIT",
 	"icon": "assets/flashback-settings/icon.png",
 	"environment": "client",

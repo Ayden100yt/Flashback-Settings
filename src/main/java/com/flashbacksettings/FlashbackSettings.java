@@ -65,6 +65,7 @@ public class FlashbackSettings implements ModInitializer {
                 loaded.autoRecordServers = new ArrayList<>();
             }
             loaded.autoRecordServers.removeIf(s -> s == null || s.isBlank());
+            loaded.clamp();
             return loaded;
         } catch (IOException | JsonParseException e) {
             LOGGER.error("[FlashbackSettings] Failed to read config, using defaults.", e);
@@ -107,6 +108,15 @@ public class FlashbackSettings implements ModInitializer {
         public List<String> autoRecordServers = new ArrayList<>();
         public boolean autoRecordSingleplayer = false;
 
+        public boolean discardShortReplays = false;
+        public int minReplaySeconds = 10;
+
+        public boolean limitStorageSize = false;
+        public int maxStorageGb = 20;
+        public boolean deleteOldReplays = false;
+        public int maxReplayAgeDays = 30;
+        public boolean cleanupNotifications = true;
+
         public static final String STYLE_VANILLA = "vanilla";
         public static final String STYLE_FANCY = "fancy";
 
@@ -115,6 +125,12 @@ public class FlashbackSettings implements ModInitializer {
 
         public boolean isFancyStyle() {
             return STYLE_FANCY.equalsIgnoreCase(menuStyle);
+        }
+
+        public void clamp() {
+            this.minReplaySeconds = Math.max(1, Math.min(3600, this.minReplaySeconds));
+            this.maxStorageGb = Math.max(1, Math.min(100000, this.maxStorageGb));
+            this.maxReplayAgeDays = Math.max(1, Math.min(36500, this.maxReplayAgeDays));
         }
     }
 }
